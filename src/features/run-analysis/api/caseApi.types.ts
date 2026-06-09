@@ -1,25 +1,41 @@
+import type {
+  AnalysisAnatomicalLocation,
+  AnalysisSex,
+} from "@/entities/analysis";
+
 export type CaseStatus =
   | "draft"
   | "submitted"
   | "queued"
   | "uploading"
   | "analyzing"
+  | "processing"
   | "completed"
   | "failed"
   | "error"
   | (string & {});
 
 export interface CaseCreatePayload {
-  metadata?: Record<string, unknown>;
-  consents?: Record<string, boolean>;
-  [key: string]: unknown;
+  age_years: number;
+  sex: AnalysisSex;
+  anatomical_location: AnalysisAnatomicalLocation;
+  consent_personal_data: true;
+  consent_image_processing: true;
+  consent_email_report: boolean;
+  policy_version: "2025-01";
+  contact_email?: string;
 }
 
-export interface CasePatchPayload {
-  metadata?: Record<string, unknown>;
-  consents?: Record<string, boolean>;
-  [key: string]: unknown;
-}
+export type CasePatchPayload = Partial<{
+  age_years: number;
+  sex: AnalysisSex;
+  anatomical_location: AnalysisAnatomicalLocation;
+  consent_personal_data: boolean;
+  consent_image_processing: boolean;
+  consent_email_report: boolean;
+  policy_version: string;
+  contact_email: string;
+}>;
 
 export interface CaseAnalysisData {
   status?: string | null;
@@ -46,7 +62,14 @@ export interface CaseDto {
   caseId?: string;
   case_id?: string;
   status?: CaseStatus;
-  metadata?: Record<string, unknown>;
+  age_years?: number;
+  sex?: AnalysisSex;
+  anatomical_location?: AnalysisAnatomicalLocation;
+  contact_email?: string | null;
+  consent_personal_data?: boolean;
+  consent_image_processing?: boolean;
+  consent_email_report?: boolean;
+  policy_version?: string;
   analysis?: CaseAnalysisData | null;
   pdf?: CasePdfData | null;
   error?: CaseErrorData | string | null;

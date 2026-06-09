@@ -16,16 +16,16 @@ export const WORKSPACE_STATE_ORDER: WorkspaceState[] = [
 ];
 
 export const ANALYSIS_TIMELINE: AnalysisTimelineStep[] = [
-  { delay: 400, stage: 1, progress: 30 },
-  { delay: 1200, stage: 2, progress: 65 },
-  { delay: 2400, stage: 3, progress: 90 },
-  { delay: 3200, stage: 3, progress: 100 },
+  { delay: 400, stage: 0, progress: 10 },
+  { delay: 1000, stage: 1, progress: 30 },
+  { delay: 1800, stage: 2, progress: 65 },
+  { delay: 2600, stage: 2, progress: 85 },
 ];
 
 export const ANALYSIS_STAGE_LABELS = [
-  "Изображение загружено",
+  "Кейс создан и изображение загружено",
   "Выполняется анализ",
-  "Формирование отчета",
+  "Формируется PDF-отчёт",
 ];
 
 export const DEMO_ERROR_OPTIONS: Array<{ label: string; type: ErrorType }> = [
@@ -38,32 +38,32 @@ export const DEMO_ERROR_OPTIONS: Array<{ label: string; type: ErrorType }> = [
 export const ANALYSIS_ERROR_CONTENT: Record<ErrorType, AnalysisErrorContent> = {
   format: {
     title: "Неподдерживаемый формат файла",
-    desc: "Пожалуйста, загрузите изображение в формате JPG, JPEG или PNG.",
-    hint: "Конвертируйте файл в поддерживаемый формат и повторите попытку.",
+    desc: "Загрузите изображение в формате JPG, JPEG или PNG.",
+    hint: "Проверьте формат файла и повторите попытку.",
     color: "#fff1f2",
     border: "#fecdd3",
     iconBg: "#fee2e2",
   },
   size: {
     title: "Файл слишком большой",
-    desc: "Размер загружаемого файла превышает максимально допустимый - 10 МБ.",
-    hint: "Уменьшите размер изображения с помощью любого графического редактора.",
+    desc: "Размер загружаемого файла превышает максимально допустимые 10 МБ.",
+    hint: "Уменьшите размер файла и повторите попытку.",
     color: "#fffbeb",
     border: "#fde68a",
     iconBg: "#fef3c7",
   },
   network: {
     title: "Ошибка сети",
-    desc: "Не удалось установить соединение с сервером. Проверьте подключение к интернету.",
-    hint: "Убедитесь, что вы подключены к интернету, и повторите попытку.",
+    desc: "Не удалось установить соединение с сервером.",
+    hint: "Проверьте подключение к интернету и повторите попытку.",
     color: "#f5f3ff",
     border: "#ddd6fe",
     iconBg: "#ede9fe",
   },
   server: {
-    title: "Сервер временно недоступен",
-    desc: "Сервис временно недоступен в связи с техническим обслуживанием.",
-    hint: "Попробуйте повторить запрос через несколько минут.",
+    title: "Ошибка сервера",
+    desc: "Сервис временно недоступен или вернул ошибку.",
+    hint: "Попробуйте повторить запрос немного позже.",
     color: "#ecfeff",
     border: "#a5f3fc",
     iconBg: "#cffafe",

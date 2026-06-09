@@ -20,9 +20,9 @@ export function ErrorStep({ errorMessage, errorType, onReset }: ErrorStepProps) 
   const error = errorType
     ? ANALYSIS_ERROR_CONTENT[errorType]
     : {
-        title: "Ошибка загрузки изображения",
-        desc: errorMessage ?? "Не удалось обработать выбранный файл.",
-        hint: "Проверьте формат и размер изображения, затем повторите попытку.",
+        title: "Ошибка обработки",
+        desc: errorMessage ?? "Не удалось завершить обработку изображения.",
+        hint: "Проверьте данные и попробуйте снова.",
         color: "#fff1f2",
         border: "#fecdd3",
         iconBg: "#fee2e2",
@@ -33,7 +33,12 @@ export function ErrorStep({ errorMessage, errorType, onReset }: ErrorStepProps) 
     <div>
       <div className="mb-6">
         <h3
-          style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.25rem", color: "#0f172a" }}
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 700,
+            fontSize: "1.25rem",
+            color: "#0f172a",
+          }}
         >
           Ошибка обработки
         </h3>
@@ -70,8 +75,8 @@ export function ErrorStep({ errorMessage, errorType, onReset }: ErrorStepProps) 
       </div>
 
       <button
-        onClick={onReset}
         className="flex items-center gap-2 px-6 py-3 rounded-xl text-[15px] text-white transition-all hover:opacity-90"
+        onClick={onReset}
         style={{
           background: "linear-gradient(135deg, #1447a0 0%, #2563eb 100%)",
           fontFamily: "var(--font-display)",

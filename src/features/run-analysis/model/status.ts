@@ -40,5 +40,5 @@ export function getCaseErrorMessage(caseData: CaseDto | null | undefined): strin
     return caseData.error;
   }
 
-  return caseData.error.message ?? caseData.error.code ?? "Case processing failed.";
+  return caseData.error.message ?? caseData.error.code ?? "Анализ кейса завершился ошибкой.";
 }

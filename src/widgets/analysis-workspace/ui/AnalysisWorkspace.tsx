@@ -1,4 +1,4 @@
-import { ErrorStateDemo, ErrorStep } from "@/features/analysis-error";
+import { ErrorStep } from "@/features/analysis-error";
 import { PreviewStep } from "@/features/image-preview";
 import { UploadStep } from "@/features/image-upload";
 import { AnalyzingStep, useAnalysisWorkflow } from "@/features/run-analysis";
@@ -10,7 +10,7 @@ interface AnalysisWorkspaceProps {
   workspaceRef: React.RefObject<HTMLElement | null>;
 }
 
-function getHealthStyles(tone: "mock" | "healthy" | "checking" | "unavailable") {
+function getHealthStyles(tone: "mock" | "healthy" | "checking" | "warning" | "unavailable") {
   switch (tone) {
     case "healthy":
       return {
@@ -24,11 +24,17 @@ function getHealthStyles(tone: "mock" | "healthy" | "checking" | "unavailable") 
         border: "#93c5fd",
         color: "#1d4ed8",
       };
-    case "unavailable":
+    case "warning":
       return {
         background: "#fff7ed",
         border: "#fdba74",
         color: "#c2410c",
+      };
+    case "unavailable":
+      return {
+        background: "#fff1f2",
+        border: "#fda4af",
+        color: "#be123c",
       };
     case "mock":
     default:
@@ -46,22 +52,31 @@ export function AnalysisWorkspace({ workspaceRef }: AnalysisWorkspaceProps) {
   const {
     analysisStage,
     backendHealth,
+    canSendReportToEmail,
+    canStartAnalysis,
     currentStep,
     downloadErrorMessage,
+    emailAddress,
+    emailErrorMessage,
+    emailSuccessMessage,
     errorMessage,
     errorType,
     fileName,
     fileSize,
+    formData,
     handleDownloadReport,
-    isConsentAccepted,
+    handleFormFieldChange,
+    handleSendReportToEmail,
     isDownloadingReport,
+    isSendingReportToEmail,
     previewUrl,
     processFile,
     progress,
+    removeSelectedFile,
     resetAll,
-    setIsConsentAccepted,
-    simulateError,
     startAnalysis,
+    startHint,
+    validationErrors,
     workspaceState,
   } = useAnalysisWorkflow();
 
@@ -85,11 +100,6 @@ export function AnalysisWorkspace({ workspaceRef }: AnalysisWorkspaceProps) {
   }, [processFile]);
 
   const healthStyles = getHealthStyles(backendHealth.tone);
-  const startHint = !isConsentAccepted
-    ? "Подтвердите согласие на обработку персональных данных, чтобы начать анализ."
-    : !backendHealth.isAvailable
-      ? backendHealth.description
-      : null;
 
   return (
     <section
@@ -130,12 +140,12 @@ export function AnalysisWorkspace({ workspaceRef }: AnalysisWorkspaceProps) {
               color: "#64748b",
             }}
           >
-            Загрузите изображение и получите результат анализа
+            Заполните данные, загрузите изображение и получите PDF-отчёт по результатам анализа.
           </p>
         </div>
 
         <div
-          className="max-w-[860px] mx-auto rounded-2xl px-4 py-3 mb-5 text-[14px]"
+          className="max-w-[980px] mx-auto rounded-2xl px-4 py-3 mb-5 text-[14px]"
           style={{
             background: healthStyles.background,
             border: `1px solid ${healthStyles.border}`,
@@ -147,7 +157,7 @@ export function AnalysisWorkspace({ workspaceRef }: AnalysisWorkspaceProps) {
         </div>
 
         <div
-          className="max-w-[860px] mx-auto rounded-3xl overflow-hidden"
+          className="max-w-[980px] mx-auto rounded-3xl overflow-hidden"
           style={{
             background: "white",
             boxShadow: "0 4px 40px rgba(20,71,160,0.08), 0 1px 8px rgba(15,23,42,0.06)",
@@ -157,43 +167,60 @@ export function AnalysisWorkspace({ workspaceRef }: AnalysisWorkspaceProps) {
           <WorkspaceStepper currentState={workspaceState} />
 
           <div className="p-8 lg:p-10">
-            {(currentStep === "idle" || currentStep === "uploading") && (
+            {currentStep === "idle" && (
               <UploadStep
                 dragOver={dragOver}
                 fileInputRef={fileInputRef}
+                formData={formData}
                 onDrop={handleDrop}
+                onFieldChange={handleFormFieldChange}
                 onFileInput={handleFileInput}
                 setDragOver={setDragOver}
+                validationErrors={validationErrors}
               />
             )}
 
             {currentStep === "preview" && previewUrl && (
               <PreviewStep
-                consentChecked={isConsentAccepted}
                 fileInputRef={fileInputRef}
                 fileName={fileName}
                 fileSize={fileSize}
-                isStartDisabled={!isConsentAccepted || !backendHealth.isAvailable}
-                onConsentChange={setIsConsentAccepted}
+                formData={formData}
+                isStartDisabled={!canStartAnalysis}
+                onFieldChange={handleFormFieldChange}
                 onFileInput={handleFileInput}
-                onRemove={resetAll}
+                onRemove={removeSelectedFile}
                 onReplace={() => fileInputRef.current?.click()}
                 onStartAnalysis={startAnalysis}
                 preview={previewUrl}
                 startHint={startHint}
+                validationErrors={validationErrors}
               />
             )}
 
-            {currentStep === "analyzing" && (
-              <AnalyzingStep progress={progress} stage={analysisStage} />
+            {(currentStep === "creating_case" ||
+              currentStep === "uploading" ||
+              currentStep === "analyzing" ||
+              currentStep === "generating_pdf") && (
+              <AnalyzingStep
+                progress={progress}
+                stage={analysisStage}
+                step={currentStep}
+              />
             )}
 
             {currentStep === "success" && (
               <ResultStep
+                canSendReportToEmail={canSendReportToEmail}
                 downloadErrorMessage={downloadErrorMessage}
+                emailAddress={emailAddress}
+                emailErrorMessage={emailErrorMessage}
+                emailSuccessMessage={emailSuccessMessage}
                 isDownloadingReport={isDownloadingReport}
+                isSendingReportToEmail={isSendingReportToEmail}
                 onDownload={handleDownloadReport}
                 onReset={resetAll}
+                onSendToEmail={handleSendReportToEmail}
               />
             )}
 
@@ -205,10 +232,6 @@ export function AnalysisWorkspace({ workspaceRef }: AnalysisWorkspaceProps) {
               />
             )}
           </div>
-
-          {(currentStep === "idle" || currentStep === "preview" || currentStep === "uploading") && (
-            <ErrorStateDemo onSelect={simulateError} />
-          )}
         </div>
       </div>
     </section>

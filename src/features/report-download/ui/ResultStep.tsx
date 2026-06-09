@@ -1,18 +1,29 @@
-import { DEMO_REPORT_META, getDemoReportCreatedDate } from "@/entities/report";
-import { CheckCircle2, RefreshCw } from "lucide-react";
+import { CheckCircle2, Mail, RefreshCw } from "lucide-react";
 
 interface ResultStepProps {
+  canSendReportToEmail: boolean;
   downloadErrorMessage: string | null;
+  emailAddress: string;
+  emailErrorMessage: string | null;
+  emailSuccessMessage: string | null;
   isDownloadingReport: boolean;
+  isSendingReportToEmail: boolean;
   onDownload: () => void;
   onReset: () => void;
+  onSendToEmail: () => void;
 }
 
 export function ResultStep({
+  canSendReportToEmail,
   downloadErrorMessage,
+  emailAddress,
+  emailErrorMessage,
+  emailSuccessMessage,
   isDownloadingReport,
+  isSendingReportToEmail,
   onDownload,
   onReset,
+  onSendToEmail,
 }: ResultStepProps) {
   return (
     <div>
@@ -48,10 +59,10 @@ export function ResultStep({
               color: "#15803d",
             }}
           >
-            Анализ успешно завершен
+            Анализ успешно завершён
           </p>
-          <p className="mt-0.5 text-[14px]" style={{ color: "#4ade80", fontFamily: "var(--font-body)" }}>
-            Отчёт готов к скачиванию в формате PDF
+          <p className="mt-0.5 text-[14px]" style={{ color: "#16a34a", fontFamily: "var(--font-body)" }}>
+            PDF-отчёт сформирован и готов к скачиванию.
           </p>
         </div>
       </div>
@@ -71,20 +82,17 @@ export function ResultStep({
             className="w-12 h-14 rounded-lg flex items-center justify-center"
             style={{ background: "#dc2626" }}
           >
-            <span
-              className="text-white text-[11px]"
-              style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
-            >
+            <span className="text-white text-[11px]" style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>
               PDF
             </span>
           </div>
           <span className="text-[11px]" style={{ color: "#94a3b8", fontFamily: "var(--font-body)" }}>
-            {DEMO_REPORT_META.previewLabel}
+            Отчёт
           </span>
         </div>
 
         <div className="flex-1 p-5">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between gap-4">
             <div>
               <p
                 style={{
@@ -94,10 +102,10 @@ export function ResultStep({
                   color: "#0f172a",
                 }}
               >
-                {DEMO_REPORT_META.fileName}
+                dermatology-analysis-report.pdf
               </p>
               <p className="mt-0.5 text-[13px]" style={{ color: "#64748b", fontFamily: "var(--font-body)" }}>
-                {DEMO_REPORT_META.title}
+                Готовый отчёт по результатам дерматологического анализа.
               </p>
             </div>
             <span
@@ -110,28 +118,14 @@ export function ResultStep({
                 fontWeight: 500,
               }}
             >
-              {DEMO_REPORT_META.status}
+              Готов
             </span>
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-3">
-            {[
-              { label: "Размер", value: DEMO_REPORT_META.size },
-              { label: "Страниц", value: DEMO_REPORT_META.pages },
-              { label: "Создан", value: getDemoReportCreatedDate() },
-            ].map((item) => (
-              <div key={item.label}>
-                <span className="text-[12px]" style={{ color: "#94a3b8", fontFamily: "var(--font-body)" }}>
-                  {item.label}:{" "}
-                </span>
-                <span
-                  className="text-[12px]"
-                  style={{ color: "#475569", fontFamily: "var(--font-body)", fontWeight: 500 }}
-                >
-                  {item.value}
-                </span>
-              </div>
-            ))}
+          <div className="mt-3 flex flex-wrap gap-3 text-[12px]" style={{ color: "#64748b", fontFamily: "var(--font-body)" }}>
+            <span>Формат: PDF</span>
+            <span>Содержимое: результаты анализа</span>
+            {canSendReportToEmail && <span>Email: {emailAddress}</span>}
           </div>
         </div>
       </div>
@@ -149,14 +143,39 @@ export function ResultStep({
           }}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 2v8M5 7l3 3 3-3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M8 2v8M5 7l3 3 3-3"
+              stroke="white"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
             <path d="M3 13h10" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           {isDownloadingReport ? "Скачивание..." : "Скачать PDF-отчёт"}
         </button>
+
+        {canSendReportToEmail && (
+          <button
+            className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-[15px] transition-all hover:bg-slate-100 disabled:opacity-60"
+            disabled={isSendingReportToEmail}
+            onClick={onSendToEmail}
+            style={{
+              border: "1px solid rgba(15,23,42,0.1)",
+              color: "#475569",
+              fontFamily: "var(--font-display)",
+              fontWeight: 500,
+              background: "white",
+            }}
+          >
+            <Mail size={15} />
+            {isSendingReportToEmail ? "Отправляем..." : "Отправить на email"}
+          </button>
+        )}
+
         <button
-          onClick={onReset}
           className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-[15px] transition-all hover:bg-slate-100"
+          onClick={onReset}
           style={{
             border: "1px solid rgba(15,23,42,0.1)",
             color: "#475569",
@@ -166,7 +185,7 @@ export function ResultStep({
           }}
         >
           <RefreshCw size={15} />
-          Выполнить новый анализ
+          Новый анализ
         </button>
       </div>
 
@@ -181,6 +200,34 @@ export function ResultStep({
           }}
         >
           {downloadErrorMessage}
+        </div>
+      )}
+
+      {emailSuccessMessage && (
+        <div
+          className="mt-4 rounded-xl px-4 py-3 text-[14px]"
+          style={{
+            background: "#f0fdf4",
+            border: "1px solid #86efac",
+            color: "#15803d",
+            fontFamily: "var(--font-body)",
+          }}
+        >
+          {emailSuccessMessage}
+        </div>
+      )}
+
+      {emailErrorMessage && (
+        <div
+          className="mt-4 rounded-xl px-4 py-3 text-[14px]"
+          style={{
+            background: "#fff1f2",
+            border: "1px solid #fecdd3",
+            color: "#b91c1c",
+            fontFamily: "var(--font-body)",
+          }}
+        >
+          {emailErrorMessage}
         </div>
       )}
     </div>

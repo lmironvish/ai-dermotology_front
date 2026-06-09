@@ -13,7 +13,7 @@ const CASES_PATH = "/cases";
 
 function getApiBaseUrl(): string {
   if (!env.apiBaseUrl) {
-    throw new Error("VITE_API_BASE_URL is required when real API mode is enabled.");
+    throw new Error("Не задан адрес backend API. Проверьте VITE_API_BASE_URL.");
   }
 
   return env.apiBaseUrl;
@@ -23,7 +23,7 @@ export function extractCaseId(caseData: CaseDto): string {
   const caseId = caseData.id ?? caseData.caseId ?? caseData.case_id;
 
   if (!caseId) {
-    throw new Error("API response did not include a case identifier.");
+    throw new Error("Backend не вернул идентификатор кейса.");
   }
 
   return caseId;
@@ -32,7 +32,7 @@ export function extractCaseId(caseData: CaseDto): string {
 export async function getHealth(): Promise<HealthResponse> {
   return requestJson<HealthResponse>(getApiBaseUrl(), "/health", {
     method: "GET",
-    errorMessage: "Unable to reach the API health endpoint.",
+    errorMessage: "Не удалось получить статус backend.",
   });
 }
 
@@ -43,14 +43,14 @@ export async function createCase(payload: CaseCreatePayload): Promise<CaseDto> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
-    errorMessage: "Unable to create a case.",
+    errorMessage: "Не удалось создать кейс.",
   });
 }
 
 export async function getCase(caseId: string): Promise<CaseDto> {
   return requestJson<CaseDto>(getApiBaseUrl(), `${CASES_PATH}/${caseId}`, {
     method: "GET",
-    errorMessage: "Unable to fetch case details.",
+    errorMessage: "Не удалось получить статус кейса.",
   });
 }
 
@@ -61,7 +61,7 @@ export async function updateCase(caseId: string, payload: CasePatchPayload): Pro
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
-    errorMessage: "Unable to update the case.",
+    errorMessage: "Не удалось обновить кейс.",
   });
 }
 
@@ -72,48 +72,49 @@ export async function uploadCaseImage(caseId: string, file: File): Promise<void>
   await requestVoid(getApiBaseUrl(), `${CASES_PATH}/${caseId}/image`, {
     method: "POST",
     body: formData,
-    errorMessage: "Unable to upload the image for this case.",
+    errorMessage: "Не удалось загрузить изображение.",
   });
 }
 
 export async function startCaseAnalysis(caseId: string): Promise<void> {
   await requestVoid(getApiBaseUrl(), `${CASES_PATH}/${caseId}/analyze`, {
     method: "POST",
-    errorMessage: "Unable to start analysis for this case.",
+    errorMessage: "Не удалось запустить анализ.",
   });
 }
 
 export async function generateCasePdf(caseId: string): Promise<void> {
   await requestVoid(getApiBaseUrl(), `${CASES_PATH}/${caseId}/reports/pdf`, {
     method: "POST",
-    errorMessage: "Unable to generate the PDF report.",
+    errorMessage: "Не удалось сформировать PDF-отчёт.",
   });
 }
 
 export async function downloadCasePdf(caseId: string): Promise<Blob> {
   return requestBlob(getApiBaseUrl(), `${CASES_PATH}/${caseId}/reports/pdf`, {
     method: "GET",
-    errorMessage: "Unable to download the PDF report.",
+    errorMessage: "Не удалось скачать PDF-отчёт.",
   });
 }
 
-export async function queueCaseReportEmail(
-  caseId: string,
-  payload: QueueReportEmailPayload,
-): Promise<void> {
+export async function sendCaseReportToEmail(caseId: string, toEmail: string): Promise<void> {
+  const payload: QueueReportEmailPayload = {
+    to_email: toEmail,
+  };
+
   await requestVoid(getApiBaseUrl(), `${CASES_PATH}/${caseId}/reports/email`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
-    errorMessage: "Unable to queue the report email.",
+    errorMessage: "Не удалось отправить отчёт на email.",
   });
 }
 
-export async function getCaseEmailDeliveries(caseId: string): Promise<EmailDeliveryDto[]> {
+export async function getEmailDeliveries(caseId: string): Promise<EmailDeliveryDto[]> {
   return requestJson<EmailDeliveryDto[]>(getApiBaseUrl(), `${CASES_PATH}/${caseId}/email-deliveries`, {
     method: "GET",
-    errorMessage: "Unable to fetch email deliveries for this case.",
+    errorMessage: "Не удалось получить историю отправок отчёта.",
   });
 }

@@ -1,21 +1,53 @@
+import type { AnalysisStoreStep } from "@/entities/analysis";
 import { ANALYSIS_STAGE_LABELS } from "@/entities/analysis";
 
 interface AnalyzingStepProps {
   progress: number;
   stage: number;
+  step: Extract<AnalysisStoreStep, "creating_case" | "uploading" | "analyzing" | "generating_pdf">;
 }
 
-export function AnalyzingStep({ progress, stage }: AnalyzingStepProps) {
+const STEP_CONTENT: Record<AnalyzingStepProps["step"], { title: string; description: string; note: string }> = {
+  creating_case: {
+    title: "1. Подготовка кейса",
+    description: "Создаём кейс и проверяем данные перед отправкой изображения.",
+    note: "Подготовка занимает несколько секунд.",
+  },
+  uploading: {
+    title: "2. Загрузка изображения",
+    description: "Файл загружается на сервер для последующего анализа.",
+    note: "Не закрывайте страницу до завершения загрузки.",
+  },
+  analyzing: {
+    title: "3. Выполнение анализа",
+    description: "Нейросетевая модель обрабатывает изображение и формирует результат.",
+    note: "Ожидаемое время обработки: до 2 минут.",
+  },
+  generating_pdf: {
+    title: "4. Формирование PDF-отчёта",
+    description: "Анализ завершён. Готовим PDF-отчёт для скачивания.",
+    note: "Формирование отчёта обычно занимает несколько секунд.",
+  },
+};
+
+export function AnalyzingStep({ progress, stage, step }: AnalyzingStepProps) {
+  const content = STEP_CONTENT[step];
+
   return (
     <div>
       <div className="mb-8">
         <h3
-          style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.25rem", color: "#0f172a" }}
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 700,
+            fontSize: "1.25rem",
+            color: "#0f172a",
+          }}
         >
-          3. Выполнение анализа
+          {content.title}
         </h3>
         <p className="mt-1 text-[14px]" style={{ color: "#64748b", fontFamily: "var(--font-body)" }}>
-          Пожалуйста, подождите - нейросетевая модель обрабатывает изображение
+          {content.description}
         </p>
       </div>
 
@@ -26,13 +58,13 @@ export function AnalyzingStep({ progress, stage }: AnalyzingStepProps) {
         <div className="flex justify-center mb-6">
           <div className="relative w-24 h-24">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 96 96">
-              <circle cx="48" cy="48" r="40" fill="none" stroke="#e2e8f0" strokeWidth="6"/>
+              <circle cx="48" cy="48" r="40" fill="none" stroke="#e2e8f0" strokeWidth="6" />
               <circle
                 cx="48"
                 cy="48"
                 r="40"
                 fill="none"
-                stroke="url(#grad)"
+                stroke="url(#analysis-progress-gradient)"
                 strokeWidth="6"
                 strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 40}`}
@@ -40,9 +72,9 @@ export function AnalyzingStep({ progress, stage }: AnalyzingStepProps) {
                 style={{ transition: "stroke-dashoffset 0.5s ease" }}
               />
               <defs>
-                <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#1447a0"/>
-                  <stop offset="100%" stopColor="#2563eb"/>
+                <linearGradient id="analysis-progress-gradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#1447a0" />
+                  <stop offset="100%" stopColor="#2563eb" />
                 </linearGradient>
               </defs>
             </svg>
@@ -61,10 +93,10 @@ export function AnalyzingStep({ progress, stage }: AnalyzingStepProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2.5 max-w-[320px] mx-auto text-left">
-          {ANALYSIS_STAGE_LABELS.map((label, i) => {
-            const done = i < stage;
-            const active = i === stage && stage < 3;
+        <div className="flex flex-col gap-2.5 max-w-[380px] mx-auto text-left">
+          {ANALYSIS_STAGE_LABELS.map((label, index) => {
+            const done = index < stage;
+            const active = index === stage && progress < 100;
 
             return (
               <div key={label} className="flex items-center gap-3">
@@ -76,7 +108,13 @@ export function AnalyzingStep({ progress, stage }: AnalyzingStepProps) {
                 >
                   {done ? (
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5l2 2 4-4" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M2 5l2 2 4-4"
+                        stroke="#16a34a"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   ) : active ? (
                     <div
@@ -108,14 +146,11 @@ export function AnalyzingStep({ progress, stage }: AnalyzingStepProps) {
         style={{ background: "#fffbeb", border: "1px solid #fde68a" }}
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <circle cx="8" cy="8" r="6" stroke="#d97706" strokeWidth="1.4"/>
-          <path d="M8 5v3.5M8 10.5v.5" stroke="#d97706" strokeWidth="1.4" strokeLinecap="round"/>
+          <circle cx="8" cy="8" r="6" stroke="#d97706" strokeWidth="1.4" />
+          <path d="M8 5v3.5M8 10.5v.5" stroke="#d97706" strokeWidth="1.4" strokeLinecap="round" />
         </svg>
-        <span
-          className="text-[13px]"
-          style={{ color: "#92400e", fontFamily: "var(--font-body)" }}
-        >
-          Ожидаемое время обработки: до 2 минут
+        <span className="text-[13px]" style={{ color: "#92400e", fontFamily: "var(--font-body)" }}>
+          {content.note}
         </span>
       </div>
 

@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { env } from "@/app/config/env";
 import { downloadReport } from "@/shared/api";
 import { ApiError } from "@/shared/api/http";
-import { downloadCasePdf, generateCasePdf } from "../api/caseApi";
+import { downloadCasePdf } from "../api/caseApi";
 import { analysisQueryKeys } from "./queryKeys";
 
 const RETRYABLE_PDF_STATUSES = new Set([404, 409, 423, 425]);
@@ -60,7 +60,6 @@ export function useDownloadAnalysisPdfMutation() {
       }
 
       if (env.analysisApiBackend === "cases") {
-        await generateCasePdf(analysisId);
         return downloadCasePdfWithRetry(analysisId);
       }
 

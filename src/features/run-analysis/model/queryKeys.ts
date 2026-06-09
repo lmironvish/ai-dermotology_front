@@ -6,4 +6,5 @@ export const analysisQueryKeys = {
   caseStart: () => [...analysisQueryKeys.all, "case", "start"] as const,
   caseStatus: (id: string) => [...analysisQueryKeys.all, "case", "status", id] as const,
   casePdf: (id: string) => [...analysisQueryKeys.all, "case", "pdf", id] as const,
+  caseEmail: (id: string) => [...analysisQueryKeys.all, "case", "email", id] as const,
 };
