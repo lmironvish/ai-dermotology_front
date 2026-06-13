@@ -18,6 +18,7 @@ function figmaAssetResolver() {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const apiProxyTarget = env.VITE_API_PROXY_TARGET;
+  base: '/ai-dermotology_front/',
 
   return {
     plugins: [

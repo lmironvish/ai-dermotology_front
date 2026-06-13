@@ -1,25 +1,21 @@
-
 # AI Dermatology Frontend
 
-Frontend application for dermatological image analysis with support for:
-- `mock` mode for local UI development
-- `real + cases` backend flow
-- `real + simple` placeholder backend flow
+Frontend-приложение для анализа дерматологических изображений с поддержкой режимов:
+- `mock` для локальной разработки интерфейса
+- `real + cases` для реального backend-сценария
+- `real + simple` для упрощённого placeholder-сценария
 
-Original design source:
-https://www.figma.com/design/fTclQgJ7bjyIgjjnO7OzVJ/AI-Dermatology-Landing-Page
+## Локальный запуск
 
-## Run locally
-
-1. Install dependencies:
+1. Установите зависимости:
    `npm install`
-2. Copy `.env.example` to `.env`
-3. Start the dev server:
+2. Скопируйте `.env.example` в `.env`
+3. Запустите dev-сервер:
    `npm run dev`
 
-## Environment variables
+## Переменные окружения
 
-Defined in `.env.example`:
+Заданы в `.env.example`:
 
 ```env
 VITE_ANALYSIS_API_MODE=mock
@@ -29,21 +25,21 @@ VITE_ANALYSIS_POLL_INTERVAL_MS=2000
 VITE_ANALYSIS_POLL_TIMEOUT_MS=120000
 ```
 
-## Backend modes
+## Режимы backend
 
-### 1. Mock mode
+### 1. Mock-режим
 
-Use for frontend-only development.
+Используется для frontend-разработки без backend.
 
 ```env
 VITE_ANALYSIS_API_MODE=mock
 ```
 
-In this mode the app generates a demo PDF locally and does not call the backend.
+В этом режиме приложение генерирует demo PDF локально и не обращается к backend.
 
-### 2. Real mode with `cases` API
+### 2. Real-режим с API `cases`
 
-Use for the backend flow based on:
+Используется для основного backend-сценария на базе:
 - `POST /cases`
 - `POST /cases/{caseId}/image`
 - `POST /cases/{caseId}/analyze`
@@ -57,9 +53,9 @@ VITE_ANALYSIS_API_BACKEND=cases
 VITE_API_BASE_URL=http://localhost:8000
 ```
 
-### 3. Real mode with placeholder `simple` API
+### 3. Real-режим с placeholder API `simple`
 
-Use for the simplified integration flow:
+Используется для упрощённого интеграционного сценария:
 - `POST /api/analysis`
 - `GET /api/analysis/{id}/status`
 - `GET /api/analysis/{id}/report`
@@ -70,9 +66,8 @@ VITE_ANALYSIS_API_BACKEND=simple
 VITE_API_BASE_URL=http://localhost:8000
 ```
 
-## Notes
+## Примечания
 
-- `VITE_ANALYSIS_POLL_INTERVAL_MS` controls how often frontend polls backend status.
-- `VITE_ANALYSIS_POLL_TIMEOUT_MS` controls the maximum waiting time for analysis/report generation.
-- If `VITE_ANALYSIS_API_BACKEND` is not set, the app defaults to `cases`.
-  
+- `VITE_ANALYSIS_POLL_INTERVAL_MS` задаёт интервал опроса статуса backend.
+- `VITE_ANALYSIS_POLL_TIMEOUT_MS` задаёт максимальное время ожидания анализа и генерации отчёта.
+- Если `VITE_ANALYSIS_API_BACKEND` не указан, приложение по умолчанию использует `cases`.
