@@ -38,10 +38,11 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_ANALYSIS_API_MODE: mock
-          VITE_ANALYSIS_API_BACKEND: cases
-          VITE_ANALYSIS_POLL_INTERVAL_MS: 2000
-          VITE_ANALYSIS_POLL_TIMEOUT_MS: 120000
+          VITE_ANALYSIS_API_MODE: ${{ vars.VITE_ANALYSIS_API_MODE }}
+          VITE_ANALYSIS_API_BACKEND: ${{ vars.VITE_ANALYSIS_API_BACKEND }}
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          VITE_ANALYSIS_POLL_INTERVAL_MS: ${{ vars.VITE_ANALYSIS_POLL_INTERVAL_MS }}
+          VITE_ANALYSIS_POLL_TIMEOUT_MS: ${{ vars.VITE_ANALYSIS_POLL_TIMEOUT_MS }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

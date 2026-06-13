@@ -18,20 +18,22 @@ function figmaAssetResolver() {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const apiProxyTarget = env.VITE_API_PROXY_TARGET;
-  base: '/ai-dermotology_front/',
 
   return {
+    base: "/ai-dermotology_front/",
+
     plugins: [
       figmaAssetResolver(),
-      // The React and Tailwind plugins are both required for Make.
       react(),
       tailwindcss(),
     ],
+
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
     },
+
     server: apiProxyTarget
       ? {
           proxy: {
@@ -42,6 +44,7 @@ export default defineConfig(({ mode }) => {
           },
         }
       : undefined,
+
     assetsInclude: ["**/*.svg", "**/*.csv"],
   };
 });
